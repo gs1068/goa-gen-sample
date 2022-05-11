@@ -37,3 +37,30 @@ func (s *todosrvc) Show(ctx context.Context, p *todo.ShowPayload) (res *todo.Tod
 	}
 	return t, nil
 }
+
+func (s *todosrvc) Create(ctx context.Context, p *todo.CreatePayload) (res string, err error) {
+	s.logger.Print("todo.create")
+	id, err := s.db.Create(p.Title)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(id), nil
+}
+
+func (s *todosrvc) Update(ctx context.Context, p *todo.UpdatePayload) (res string, err error) {
+	s.logger.Print("todo.Update")
+	id, err := s.db.Update(p.ID, p.IsDone)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(id), nil
+}
+
+func (s *todosrvc) Delete(ctx context.Context, p *todo.DeletePayload) (res string, err error) {
+	s.logger.Print("todo.Update")
+	id, err := s.db.Delete(p.ID)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(id), nil
+}

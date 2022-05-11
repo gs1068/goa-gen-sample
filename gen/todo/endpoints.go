@@ -15,15 +15,21 @@ import (
 
 // Endpoints wraps the "todo" service endpoints.
 type Endpoints struct {
-	Hello goa.Endpoint
-	Show  goa.Endpoint
+	Hello  goa.Endpoint
+	Show   goa.Endpoint
+	Create goa.Endpoint
+	Update goa.Endpoint
+	Delete goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "todo" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
-		Hello: NewHelloEndpoint(s),
-		Show:  NewShowEndpoint(s),
+		Hello:  NewHelloEndpoint(s),
+		Show:   NewShowEndpoint(s),
+		Create: NewCreateEndpoint(s),
+		Update: NewUpdateEndpoint(s),
+		Delete: NewDeleteEndpoint(s),
 	}
 }
 
@@ -31,6 +37,9 @@ func NewEndpoints(s Service) *Endpoints {
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.Hello = m(e.Hello)
 	e.Show = m(e.Show)
+	e.Create = m(e.Create)
+	e.Update = m(e.Update)
+	e.Delete = m(e.Delete)
 }
 
 // NewHelloEndpoint returns an endpoint function that calls the method "hello"
@@ -53,5 +62,32 @@ func NewShowEndpoint(s Service) goa.Endpoint {
 		}
 		vres := NewViewedTodo(res, "default")
 		return vres, nil
+	}
+}
+
+// NewCreateEndpoint returns an endpoint function that calls the method
+// "create" of service "todo".
+func NewCreateEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*CreatePayload)
+		return s.Create(ctx, p)
+	}
+}
+
+// NewUpdateEndpoint returns an endpoint function that calls the method
+// "update" of service "todo".
+func NewUpdateEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*UpdatePayload)
+		return s.Update(ctx, p)
+	}
+}
+
+// NewDeleteEndpoint returns an endpoint function that calls the method
+// "delete" of service "todo".
+func NewDeleteEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*DeletePayload)
+		return s.Delete(ctx, p)
 	}
 }

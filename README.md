@@ -8,3 +8,22 @@
 
 参考
 https://takakisan.com/golang-goa-beginner/
+
+### SQL 準備
+
+```
+go get github.com/mattn/go-sqlite3
+
+sqlite3 ./db.sqlite3
+
+create table todos (
+    id integer primary key autoincrement,
+    title text not null,
+    is_done boolean not null default false
+);
+
+insert into todos (title) values ('buy milk');
+
+sqlite> select * from todos;
+1|buy milk|0
+```

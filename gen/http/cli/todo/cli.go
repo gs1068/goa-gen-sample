@@ -23,13 +23,13 @@ import (
 //    command (subcommand1|subcommand2|...)
 //
 func UsageCommands() string {
-	return `todo (hello|show)
+	return `todo (hello|show|create|update|delete)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
-	return os.Args[0] + ` todo hello --name "Totam aut iusto repudiandae facilis aut autem."` + "\n" +
+	return os.Args[0] + ` todo hello --name "Minima mollitia accusantium ut quis voluptatem vel."` + "\n" +
 		""
 }
 
@@ -50,10 +50,23 @@ func ParseEndpoint(
 
 		todoShowFlags  = flag.NewFlagSet("show", flag.ExitOnError)
 		todoShowIDFlag = todoShowFlags.String("id", "REQUIRED", "ID")
+
+		todoCreateFlags    = flag.NewFlagSet("create", flag.ExitOnError)
+		todoCreateBodyFlag = todoCreateFlags.String("body", "REQUIRED", "")
+
+		todoUpdateFlags    = flag.NewFlagSet("update", flag.ExitOnError)
+		todoUpdateBodyFlag = todoUpdateFlags.String("body", "REQUIRED", "")
+		todoUpdateIDFlag   = todoUpdateFlags.String("id", "REQUIRED", "ID")
+
+		todoDeleteFlags  = flag.NewFlagSet("delete", flag.ExitOnError)
+		todoDeleteIDFlag = todoDeleteFlags.String("id", "REQUIRED", "ID")
 	)
 	todoFlags.Usage = todoUsage
 	todoHelloFlags.Usage = todoHelloUsage
 	todoShowFlags.Usage = todoShowUsage
+	todoCreateFlags.Usage = todoCreateUsage
+	todoUpdateFlags.Usage = todoUpdateUsage
+	todoDeleteFlags.Usage = todoDeleteUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -95,6 +108,15 @@ func ParseEndpoint(
 			case "show":
 				epf = todoShowFlags
 
+			case "create":
+				epf = todoCreateFlags
+
+			case "update":
+				epf = todoUpdateFlags
+
+			case "delete":
+				epf = todoDeleteFlags
+
 			}
 
 		}
@@ -126,6 +148,15 @@ func ParseEndpoint(
 			case "show":
 				endpoint = c.Show()
 				data, err = todoc.BuildShowPayload(*todoShowIDFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = todoc.BuildCreatePayload(*todoCreateBodyFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = todoc.BuildUpdatePayload(*todoUpdateBodyFlag, *todoUpdateIDFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = todoc.BuildDeletePayload(*todoDeleteIDFlag)
 			}
 		}
 	}
@@ -145,6 +176,9 @@ Usage:
 COMMAND:
     hello: Hello implements hello.
     show: Show implements show.
+    create: Create implements create.
+    update: Update implements update.
+    delete: Delete implements delete.
 
 Additional help:
     %[1]s todo COMMAND --help
@@ -157,7 +191,7 @@ Hello implements hello.
     -name STRING: Name
 
 Example:
-    %[1]s todo hello --name "Totam aut iusto repudiandae facilis aut autem."
+    %[1]s todo hello --name "Minima mollitia accusantium ut quis voluptatem vel."
 `, os.Args[0])
 }
 
@@ -168,6 +202,44 @@ Show implements show.
     -id INT: ID
 
 Example:
-    %[1]s todo show --id 8463257927183265772
+    %[1]s todo show --id 8048501117607857933
+`, os.Args[0])
+}
+
+func todoCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] todo create -body JSON
+
+Create implements create.
+    -body JSON: 
+
+Example:
+    %[1]s todo create --body '{
+      "title": "Corrupti odit enim nisi itaque eveniet."
+   }'
+`, os.Args[0])
+}
+
+func todoUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] todo update -body JSON -id INT
+
+Update implements update.
+    -body JSON: 
+    -id INT: ID
+
+Example:
+    %[1]s todo update --body '{
+      "is_done": false
+   }' --id 146787194492660721
+`, os.Args[0])
+}
+
+func todoDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] todo delete -id INT
+
+Delete implements delete.
+    -id INT: ID
+
+Example:
+    %[1]s todo delete --id 7021020268380234771
 `, os.Args[0])
 }
