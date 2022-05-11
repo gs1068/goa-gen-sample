@@ -1,6 +1,11 @@
 package design
 
-import . "goa.design/goa/v3/dsl"
+import (
+	_ "todo/design/services"
+	_ "todo/design/types"
+
+	. "goa.design/goa/v3/dsl"
+)
 
 // API全体を通しての説明とタイトルをつけられるもの、どのURLで待ち受けるかを指定する
 var _ = API("todo", func() {
