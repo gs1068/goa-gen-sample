@@ -12,6 +12,7 @@ var _ = Service("todo", func() {
 	Method("hello", func() {
 		// どんな値を受け取るか
 		Payload(func() {
+			// ここでは、"name"という名前で、文字列を受け取る
 			Attribute("name", String, "Name")
 			// Requireとすると必須項目にできる
 			Required("name")

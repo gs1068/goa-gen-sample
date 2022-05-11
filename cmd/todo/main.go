@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -35,12 +36,26 @@ func main() {
 		logger = log.New(os.Stderr, "[todoapi] ", log.Ltime)
 	}
 
+	// 自分で追加した分
+	var (
+		db *sql.DB
+	)
+	{
+		var err error
+		db, err = sql.Open("sqlite3", "./db.sqlite3")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+	}
+	// 自分で追加した分
+
 	// Initialize the services.
 	var (
 		todoSvc todo.Service
 	)
 	{
-		todoSvc = todoapi.NewTodo(logger)
+		todoSvc = todoapi.NewTodo(db, logger)
 	}
 
 	// Wrap the services in endpoints that can be invoked from other services

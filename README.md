@@ -5,3 +5,6 @@
    - gen/配下のファイルが自動生成される。（いじらない）
 3. $ goa example todo/design
    - todo.go と cmd/配下が自動生成される
+
+参考
+https://takakisan.com/golang-goa-beginner/
